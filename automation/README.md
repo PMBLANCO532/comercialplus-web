@@ -11,3 +11,5 @@ Variables necesarias en el VPS (nunca en Git):
 - `STATE_DIR`: opcional; por defecto `/var/lib/comercialplus-ia-webhook`.
 
 Ruta esperada del endpoint: `POST /stripe/webhook`. Antes de activarlo hay que configurar el endpoint en Stripe y probar un evento firmado.
+
+Si falta `ZOOM_JOIN_URL` o falla el envío, el receptor devuelve un error para que Stripe reintente; el evento no se marca como procesado hasta entregar el correo.

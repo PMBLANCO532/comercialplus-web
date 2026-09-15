@@ -22,7 +22,9 @@ function signatureIsValid(raw, header) {
   if (!timestamp || !received || Math.abs(Date.now() / 1000 - Number(timestamp)) > 300) return false;
   const signed = `${timestamp}.${raw}`;
   const expected = crypto.createHmac('sha256', SECRET).update(signed).digest('hex');
-  return crypto.timingSafeEqual(Buffer.from(expected), Buffer.from(received));
+  const expectedBuffer = Buffer.from(expected);
+  const receivedBuffer = Buffer.from(received);
+  return expectedBuffer.length === receivedBuffer.length && crypto.timingSafeEqual(expectedBuffer, receivedBuffer);
 }
 
 function loadProcessed() {
@@ -70,6 +72,7 @@ const server = http.createServer((req, res) => {
       const session = event.data.object;
       const email = session.customer_details?.email || session.customer_email;
       const name = session.customer_details?.name || '';
+      if (!JOIN_URL) { res.writeHead(503).end('zoom access not configured'); return; }
       try { await sendMail(email, name); } catch (error) { console.error('mail delivery failed', error.message); res.writeHead(500).end('mail failed'); return; }
     }
     processed.add(event.id); saveProcessed(processed);
