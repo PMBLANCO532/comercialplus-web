@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://ia.comercialplus.es/sitemap.xml
