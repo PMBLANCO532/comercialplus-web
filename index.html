@@ -23,6 +23,7 @@ const stripeCheckout='https://book.stripe.com/eVqdR90iU9lL3jvdzO8bS03';
 const heroCta=document.querySelector('.hero .button');
 if(heroCta){heroCta.href=stripeCheckout;heroCta.innerHTML='Reservar mi plaza · 100 € <span aria-hidden="true">↗</span>';}
 const closingCta=document.querySelector('.closing .button');
-if(closingCta){closingCta.href=stripeCheckout;closingCta.textContent='Reservar plaza y pagar 100 € ↗';}
+if(closingCta){closingCta.href=stripeCheckout;closingCta.textContent='Reservar plaza y pagar 100 € ↗';const hint=closingCta.nextElementSibling;if(hint)hint.textContent='El pago se realiza en la página segura de Stripe. Recibirás el recibo en el email que introduzcas.';const copy=closingCta.parentElement.querySelector('.direct');if(copy)copy.innerHTML='¿Tienes dudas antes de reservar? Escribe a <a href="mailto:info@comercialplus.es">info@comercialplus.es</a> o usa el <a href="https://comercialplus.com/contacto.html">formulario de contacto</a>.';}
 </script>
+<script>document.querySelectorAll('a[href="https://comercialplus.com/contacto.html"]').forEach(a=>a.href='https://comercialplus.es/contacto.html');</script>
 </body></html>
