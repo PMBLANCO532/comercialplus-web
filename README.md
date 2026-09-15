@@ -4,7 +4,7 @@ Landing estática de la mentoría IA para Líderes de Equipos.
 
 Sitio publicado: https://ia.comercialplus.es/
 
-`index.html` contiene la página completa, sin dependencias externas. Las solicitudes abren un email dirigido a info@comercialplus.es; no son reservas automáticas ni cobros.
+`index.html` contiene la página completa, sin dependencias externas. Los botones de reserva llevan al Payment Link único de Stripe (100 € por persona, máximo 10 pagos) y el contacto previo abre un email dirigido a info@comercialplus.es.
 
 ## Publicación
 
