@@ -10,6 +10,7 @@ const PORT = Number(process.env.PORT || 8090);
 const SECRET = process.env.STRIPE_WEBHOOK_SECRET || '';
 const PAYMENT_LINK_ID = process.env.MENTOR_PAYMENT_LINK_ID || '';
 const FROM = process.env.FROM_EMAIL || 'info@comercialplus.es';
+const ADMIN_EMAIL = process.env.ENROLLMENT_NOTIFY_EMAIL || 'info@comercialplus.es';
 const STATE_DIR = process.env.STATE_DIR || '/var/lib/comercialplus-ia-webhook';
 
 function signatureIsValid(raw, header, secret, nowSeconds = Date.now() / 1000) {
@@ -57,16 +58,21 @@ function isValidEmail(email) {
     /^[^\s<>@]+@[^\s<>@]+\.[^\s<>@]+$/.test(email);
 }
 
-function sendEnrollmentEmail(to, name, from = FROM) {
-  if (!isValidEmail(to)) return Promise.reject(new Error('missing or invalid checkout email'));
-  if (!isValidEmail(from)) return Promise.reject(new Error('invalid sender email'));
+function buildEnrollmentEmail(to, name, from = FROM, adminEmail = ADMIN_EMAIL) {
+  if (!isValidEmail(to)) throw new Error('missing or invalid checkout email');
+  if (!isValidEmail(from)) throw new Error('invalid sender email');
+  if (!isValidEmail(adminEmail)) throw new Error('invalid enrollment notification email');
 
   const safeName = cleanName(name);
   const greeting = safeName ? `Hola ${safeName},` : 'Hola,';
   const body = `${greeting}\n\nStripe ha confirmado tu pago y tu plaza en la Mentoría IA para Líderes de Equipos queda reservada.\n\nLa mentoría consta de cuatro encuentros online por Zoom: miércoles 30 de septiembre y 7, 14 y 21 de octubre de 2026, de 19:00 a 20:00 (hora peninsular española).\n\nTe enviaremos el enlace de Zoom y las instrucciones de acceso antes del primer encuentro, en un correo aparte.\n\nSi necesitas ayuda, responde a este correo o escribe a info@comercialplus.es.\n\nUn saludo,\nPablo Blanco Cabirta\nComercial Plus\n`;
   const subject = Buffer.from('Inscripción confirmada · Mentoría IA para Líderes de Equipos', 'utf8').toString('base64');
-  const message = `From: Comercial Plus <${from}>\nTo: ${to}\nSubject: =?UTF-8?B?${subject}?=\nMIME-Version: 1.0\nContent-Type: text/plain; charset=UTF-8\nContent-Transfer-Encoding: 8bit\n\n${body}`;
+  const message = `From: Comercial Plus <${from}>\nTo: ${to}\nBcc: ${adminEmail}\nSubject: =?UTF-8?B?${subject}?=\nMIME-Version: 1.0\nContent-Type: text/plain; charset=UTF-8\nContent-Transfer-Encoding: 8bit\n\n${body}`;
+  return message;
+}
 
+function sendEnrollmentEmail(to, name, from = FROM, adminEmail = ADMIN_EMAIL) {
+  const message = buildEnrollmentEmail(to, name, from, adminEmail);
   return new Promise((resolve, reject) => {
     const proc = spawn('/usr/sbin/sendmail', ['-t', '-oi']);
     proc.on('error', reject);
@@ -75,7 +81,7 @@ function sendEnrollmentEmail(to, name, from = FROM) {
   });
 }
 
-function createWebhookServer({secret, paymentLinkID, stateDir, from = FROM, mailer = sendEnrollmentEmail}) {
+function createWebhookServer({secret, paymentLinkID, stateDir, from = FROM, adminEmail = ADMIN_EMAIL, mailer = sendEnrollmentEmail}) {
   const stateFile = path.join(stateDir, 'processed-sessions.json');
   const inFlight = new Set();
 
@@ -141,7 +147,7 @@ function createWebhookServer({secret, paymentLinkID, stateDir, from = FROM, mail
 
       inFlight.add(session.id);
       try {
-        await mailer(email, name, from);
+        await mailer(email, name, from, adminEmail);
         processed.add(session.id);
         saveProcessed(stateFile, processed);
       } catch (error) {
@@ -165,4 +171,4 @@ if (require.main === module) {
   server.listen(PORT, '127.0.0.1', () => console.log(`Stripe webhook listening on 127.0.0.1:${PORT}`));
 }
 
-module.exports = {createWebhookServer, isValidEmail, signatureIsValid};
+module.exports = {buildEnrollmentEmail, createWebhookServer, isValidEmail, signatureIsValid};

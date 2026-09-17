@@ -6,10 +6,11 @@ const crypto = require('node:crypto');
 const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
-const {createWebhookServer} = require('./stripe-webhook');
+const {buildEnrollmentEmail, createWebhookServer} = require('./stripe-webhook');
 
 const secret = 'whsec_test_only';
 const paymentLinkID = 'plink_mentor_test';
+const adminEmail = 'info@comercialplus.es';
 
 function signedBody(event) {
   const raw = JSON.stringify(event);
@@ -36,7 +37,7 @@ function checkoutEvent(overrides = {}) {
 
 async function setup(mailer) {
   const stateDir = fs.mkdtempSync(path.join(os.tmpdir(), 'comercialplus-webhook-'));
-  const server = createWebhookServer({secret, paymentLinkID, stateDir, mailer});
+  const server = createWebhookServer({secret, paymentLinkID, stateDir, adminEmail, mailer});
   await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
   const address = server.address();
   return {
@@ -69,11 +70,20 @@ test('sends one confirmation for the mentor payment and does not include Zoom ac
     assert.equal(sent[0][0], 'buyer@example.com');
     assert.match(sent[0][1], /Ada Líder/);
     assert.match(sent[0][2], /info@comercialplus\.es/);
+    assert.equal(sent[0][3], adminEmail);
     assert.doesNotMatch(sent[0].join('\n'), /zoom\.us|código de acceso/i);
     assert.match(fs.readFileSync(path.join(app.stateDir, 'processed-sessions.json'), 'utf8'), /cs_test_mentor/);
   } finally {
     await app.close();
   }
+});
+
+test('confirmation email sends a hidden copy to Comercial Plus', () => {
+  const message = buildEnrollmentEmail('buyer@example.com', 'Ada Líder', 'info@comercialplus.es', adminEmail);
+  assert.match(message, /To: buyer@example\.com/);
+  assert.match(message, /Bcc: info@comercialplus\.es/);
+  assert.doesNotMatch(message, /zoom\.us|código de acceso/i);
+  assert.throws(() => buildEnrollmentEmail('buyer@example.com', 'Ada', 'info@comercialplus.es', 'not-an-email'), /invalid enrollment notification email/);
 });
 
 test('ignores unpaid or unrelated checkout sessions', async () => {

@@ -9,6 +9,7 @@ Guardar las variables en el gestor de secretos del servicio o en un archivo de e
 - `STRIPE_WEBHOOK_SECRET`: secreto `whsec_...` del endpoint.
 - `MENTOR_PAYMENT_LINK_ID`: identificador `plink_...` del Payment Link de la mentoría.
 - `FROM_EMAIL`: opcional; por defecto `info@comercialplus.es`.
+- `ENROLLMENT_NOTIFY_EMAIL`: opcional; copia oculta de cada inscripción confirmada para poder enviar el acceso a Zoom. Por defecto `info@comercialplus.es`.
 - `PORT`: opcional; por defecto `8090`.
 - `STATE_DIR`: opcional; por defecto `/var/lib/comercialplus-ia-webhook`.
 
@@ -26,4 +27,4 @@ Con Node.js 18 o posterior, ejecutar:
 node --test automation/stripe-webhook.test.js
 ```
 
-Las pruebas usan una clave de firma ficticia, correo simulado y una carpeta temporal; no envían emails ni requieren credenciales reales.
+Las pruebas usan una clave de firma ficticia, correo simulado y una carpeta temporal; no envían emails ni requieren credenciales reales. La confirmación se envía al comprador y en copia oculta a `ENROLLMENT_NOTIFY_EMAIL`, para que Comercial Plus reciba su nombre y correo sin revelar esa dirección al participante.
