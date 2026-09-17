@@ -1,0 +1,33 @@
+[Unit]
+Description=Comercial Plus Stripe enrollment confirmation webhook
+After=network.target postfix.service
+
+[Service]
+Type=simple
+User=www-data
+Group=www-data
+WorkingDirectory=/opt/comercialplus-ia-webhook
+EnvironmentFile=/etc/comercialplus-ia-webhook.env
+Environment=PORT=8090
+Environment=STATE_DIR=/var/lib/comercialplus-ia-webhook
+StateDirectory=comercialplus-ia-webhook
+StateDirectoryMode=0700
+ExecStart=/usr/bin/node /opt/comercialplus-ia-webhook/stripe-webhook.js
+Restart=on-failure
+RestartSec=5
+UMask=0077
+# Postfix uses the setuid postdrop helper to queue a message; do not set NoNewPrivileges.
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+# Keep the write exception limited to Postfix's incoming mail queue.
+ReadWritePaths=/var/spool/postfix/maildrop
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictRealtime=true
+LockPersonality=true
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+
+[Install]
+WantedBy=multi-user.target
