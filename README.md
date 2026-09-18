@@ -12,4 +12,4 @@ Este repositorio guarda la fuente de la landing del subdominio IA. La web princi
 
 Las actualizaciones se publican de forma manual tras revisar el HTML. Con acceso SSH ya configurado, copiar solo index.html al directorio dedicado de la landing. Mantener copia de la versión anterior y verificar después HTTPS, contenido y enlaces. No subir archivos .git, credenciales o documentos internos al directorio público.
 
-Primera edición: 30 de septiembre y 7, 14 y 21 de octubre de 2026. Miércoles de 19:00 a 20:00, hora peninsular española. Cuatro encuentros por Zoom, 100 € por persona, máximo 10 participantes.
+Primera edición: 14, 21 y 28 de octubre y 4 de noviembre de 2026. Miércoles de 19:00 a 20:00, hora peninsular española. Cuatro encuentros por Zoom, 100 € por persona, máximo 10 participantes.
