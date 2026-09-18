@@ -65,7 +65,7 @@ function buildEnrollmentEmail(to, name, from = FROM, adminEmail = ADMIN_EMAIL) {
 
   const safeName = cleanName(name);
   const greeting = safeName ? `Hola ${safeName},` : 'Hola,';
-  const body = `${greeting}\n\nStripe ha confirmado tu pago y tu plaza en la Mentoría IA para Líderes de Equipos queda reservada.\n\nLa mentoría consta de cuatro encuentros online por Zoom: miércoles 30 de septiembre y 7, 14 y 21 de octubre de 2026, de 19:00 a 20:00 (hora peninsular española).\n\nTe enviaremos el enlace de Zoom y las instrucciones de acceso antes del primer encuentro, en un correo aparte.\n\nSi necesitas ayuda, responde a este correo o escribe a info@comercialplus.es.\n\nUn saludo,\nPablo Blanco Cabirta\nComercial Plus\n`;
+  const body = `${greeting}\n\nStripe ha confirmado tu pago y tu plaza en la Mentoría IA para Líderes de Equipos queda reservada.\n\nLa mentoría consta de cuatro encuentros online por Zoom: miércoles 14, 21 y 28 de octubre y 4 de noviembre de 2026, de 19:00 a 20:00 (hora peninsular española).\n\nTe enviaremos el enlace de Zoom y las instrucciones de acceso antes del primer encuentro, en un correo aparte.\n\nSi necesitas ayuda, responde a este correo o escribe a info@comercialplus.es.\n\nUn saludo,\nPablo Blanco Cabirta\nComercial Plus\n`;
   const subject = Buffer.from('Inscripción confirmada · Mentoría IA para Líderes de Equipos', 'utf8').toString('base64');
   const message = `From: Comercial Plus <${from}>\nTo: ${to}\nBcc: ${adminEmail}\nSubject: =?UTF-8?B?${subject}?=\nMIME-Version: 1.0\nContent-Type: text/plain; charset=UTF-8\nContent-Transfer-Encoding: 8bit\n\n${body}`;
   return message;

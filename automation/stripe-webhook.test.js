@@ -82,6 +82,8 @@ test('confirmation email sends a hidden copy to Comercial Plus', () => {
   const message = buildEnrollmentEmail('buyer@example.com', 'Ada Líder', 'info@comercialplus.es', adminEmail);
   assert.match(message, /To: buyer@example\.com/);
   assert.match(message, /Bcc: info@comercialplus\.es/);
+  assert.match(message, /miércoles 14, 21 y 28 de octubre y 4 de noviembre de 2026/);
+  assert.doesNotMatch(message, /30 de septiembre/);
   assert.doesNotMatch(message, /zoom\.us|código de acceso/i);
   assert.throws(() => buildEnrollmentEmail('buyer@example.com', 'Ada', 'info@comercialplus.es', 'not-an-email'), /invalid enrollment notification email/);
 });
